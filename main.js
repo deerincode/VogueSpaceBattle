@@ -1,3 +1,6 @@
+/*
+    Current build of game runs completely in console! 
+*/
 
 class Ship {
     constructor(){
