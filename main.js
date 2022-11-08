@@ -1,38 +1,22 @@
-//Create A ship object
-
-/*
-Ship -
-    hull hitpoints
-    firepower
-    accuracy
-
-    attack ()
-    retreat()
-
-*/
-
-//Create an alien ship
-
-/*
-Alien Ship -
-    hull hitpoints
-    firepower
-    accuracy
-
-    attack()
-
-*/
 
 class Ship {
     constructor(){
         this.hull = 1
         this.firepower = 1
         this.accuracy = .1
+        this.shipType = ''
     }
 
     attack(otherShip){
-        if(this.hull > 0 && otherShip.hull > 0)
-        otherShip.hull = otherShip.hull - this.firepower
+        if(this.hull > 0 && otherShip.hull > 0){
+            console.log(`${this.shipType} ship takes aim...`)
+            if(Math.random() < this.accuracy) {
+                console.log("Successful hit!")
+                otherShip.hull = otherShip.hull - this.firepower
+            }else{
+                console.log("Shot missed!")
+            }
+        }
     }
 
 }
@@ -43,17 +27,24 @@ class PlayerShip extends Ship {
        this.hull = 20
        this.firepower = 5
        this.accuracy = 0.7
+       this.shipType = 'Player'
+    }
+
+    retreat(){
+
     }
 }
 
 class AlienShip extends Ship {
     constructor(){
         super()
-        this.hull = 6
-        this.firepower = 2
-        this.accuracy = .6
+        this.hull = Math.floor(Math.random() * 5) + 5
+        this.firepower = Math.floor(Math.random() * 3) + 2
+        this.accuracy = Math.floor(Math.random() * 3) + 6 / 10
+        this.shipType = 'Alien'
     }
 }
+
 
 class Game {
     constructor(){
@@ -70,16 +61,23 @@ class Game {
     startBattle(){
         
         while((this.checkIfPlayerIsAlive()) && (this.checkIfAlienIsAlive())){
-            console.log("The while loop starts")
+            // console.log("Player ship takes aim...")
             this.humanShip.attack(this.enemyShips[0])
-            console.log(`Alien has ${this.enemyShips[0].hull} left`)
+            console.log(`Alien has ${this.enemyShips[0].hull} hull points left`)
+            // console.log("Alien ship takes aim...")
             this.enemyShips[0].attack(this.humanShip)
-            console.log(`Player has ${this.humanShip.hull} left`)
+            console.log(`Player has ${this.humanShip.hull} hull points left`)
         }
         if(this.checkIfAlienIsAlive() == false){
+            this.sendOutNextAlien()
             console.log("An alien has been defeated")
         }else if(this.checkIfPlayerIsAlive() == false){
             console.log("Player has been defeated...")
+            return
+        }
+
+        if(this.checkIfPlayerWins() == false){
+            this.startBattle()
         }
 
         
@@ -102,8 +100,12 @@ class Game {
     }
 
     checkIfPlayerWins(){
-        if(! this.enemyShips[0]){
+        if(!this.enemyShips.length){
             console.log(`Player wins!!`)
+            return true
+        }else if(this.enemyShips.length >= 1){
+            console.log("Ships still remain")
+            return false
         }
     }
 
@@ -111,30 +113,11 @@ class Game {
         this.enemyShips.shift()
     }
 
-
 }
 
-// let player = new PlayerShip()
-// let alien = new AlienShip()
-
-// player.attack(alien)
-// console.log(`Alien has ${alien.hull} left`)
-// alien.attack(player)
-// console.log(`Player has ${player.hull} left`)
 
 let game = new Game()
 
-// console.log(game.humanShip)
 game.gameSetup()
-// console.log(game.enemyShips)
-// Simulate Battle
 game.startBattle()
 
-
-/*
-Battle - requires Player and Aliens
-    -While either the Player or Alien Ship still has hitpoints, player attacks alien, then alien attacks player
-    -When an alien is destroyed, check if another alien exists. If not, the player wins
-    -If another alien exists, place them in battle, repeat battle
-
-*/
